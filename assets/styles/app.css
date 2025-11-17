@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @source not "../../public";
+
+
+@theme {
+
+  --color-primary: #008080;
+  --color-secondary: #808000;
+}

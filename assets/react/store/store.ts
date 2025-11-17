@@ -1,10 +1,14 @@
 import {configureStore} from '@reduxjs/toolkit'
 import gameReducer from './reducer/gameReducer'
+import playersReducer from './reducer/playersReducer'
+import sessionReducer from './reducer/sessionReducer'
 
 
 export const store = configureStore({
     reducer: {
-        game: gameReducer
+        game: gameReducer,
+        players: playersReducer,
+        session: sessionReducer,
     }
 })
 

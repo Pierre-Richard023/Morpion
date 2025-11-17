@@ -1,88 +1,97 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import {checkIfSomeoneWin, reset } from "../store/reducer/gameReducer";
+import { playerAbandon, requestReplay, reset, startGame } from "../store/reducer/gameReducer";
 
-
-import NinjaBlack from "../utils/images/ninja-black.svg"
-import NinjaRed from "../utils/images/ninja-red.svg";
 import Board from "../components/board/board";
+import ScoreBoard from "../components/scoreBoard/scoreBoard";
+import ResultModal from "../components/resultModal/resultModal";
 
 
 
 
 const GameViews = () => {
 
+    const dispatch = useAppDispatch()
+    const { status, winner, winnerReason, currentPlayer } = useAppSelector((state) => state.game);
+    const [toastMessage, setToastMessage] = useState<string>('');
 
-    const dispatch = useAppDispatch();
-    const mode = useAppSelector((state) => state.game.mode);
-    const square = useAppSelector((state) => state.game.squarePosition);
-    const winner = useAppSelector((state) => state.game.winner);
-    const value = useAppSelector((state) => state.game.value);
-    const playable = useAppSelector((state) => state.game.playable);
-
-
-    
     useEffect(() => {
-        dispatch(checkIfSomeoneWin());
-    }, [square]);
+        dispatch(startGame());
+    }, []);
+
+
+    const handleReplay = () => dispatch(requestReplay(currentPlayer))
+    const handleAbandon = () => dispatch(playerAbandon(currentPlayer))
+    const handleModalClose = () => {
+        setToastMessage('');
+    }
+    const handleLeave = () => {
+
+    }
+
+
+
+    useEffect(() => {
+        if (status === 'finished') {
+            let msg = '';
+            if (winnerReason === 'draw') msg = 'Match nul !';
+            else if (winner) msg = ` Joueur ${winner} a gagné !`;
+            setToastMessage(msg);
+        }
+    }, [status, winner, winnerReason]);
+
 
 
     return (
         <>
-            <section className="">
-                <div className="container flex flex-col justify-center p-4 mx-auto md:p-8">
-                    <h2 className="mb-12 text-4xl font-bold leading-none text-center sm:text-5xl">
-                        Morpion en ligne
-                    </h2>
-                    <div className="flex flex-col divide-y sm:px-8 lg:px-12 xl:px-32 divide-gray-300">
-                        <div className="">
+            <div className="container mx-auto p-4">
+                <ScoreBoard />
 
-                            <div className="">
-                                {
-                                    winner == null && playable &&
-                                    <div className="flex align-center my-4 gap-2">
-                                        <p>Joueur : </p>
-                                        <img className="w-8 h-8" src={value == "red" ? NinjaRed : NinjaBlack}
-                                            alt={value} />
-                                    </div>
-                                }
-                                {!playable &&
-                                    <div className="">
-                                        {
-                                            winner == null &&
-                                            <p> Match nul !!</p>
-                                        }
-                                        {
-                                            winner != null &&
-                                            <>
-                                                <img className="w-12 h-12"
-                                                    src={winner == "red" ? NinjaRed : NinjaBlack}
-                                                    alt={value} />
-                                                <span>à gagné </span>
-                                            </>
-                                        }
+                <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
 
-                                    </div>}
+
+                    {status === 'finished' && (
+                        <ResultModal
+                            message={toastMessage}
+                            onClose={handleModalClose}
+                        />
+                    )}
+
+                    {
+                        status === 'playing' &&
+                        <>
+                            <div className="flex flex-col items-center justify-center">
+                                <Board />
                             </div>
-                        </div>
 
-                        <Board />
+                            <div className="mt-6">
+                                <button className="flex items-center space-x-2 border border-gray-400 rounded px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                    onClick={handleAbandon}
+                                >
+                                    <span>Abandonner</span>
+                                </button>
+                            </div>
+                        </>
+                    }
+
+                    {status === 'finished' &&
+                        <>
+                            <div className="flex flex-col items-center justify-center">
+                                <div className="space-x-2 mt-4">
+                                    <button onClick={handleReplay} className="px-4 py-2 bg-primary text-white rounded-lg">
+                                        rejouer
+                                    </button>
+                                    <button onClick={handleLeave} className="px-4 py-2 bg-secondary text-white rounded-lg">
+                                        quitter la salle
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    }
 
 
-                        <div className="">
-
-                            <button type="button"
-                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2focus:outline-none"
-                                onClick={() => dispatch(reset())}
-
-                            >
-                                Rejouer
-                            </button>
-
-                        </div>
-                    </div>
                 </div>
-            </section>
+            </div>
         </>
     )
 }

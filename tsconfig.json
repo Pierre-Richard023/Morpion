@@ -1,6 +1,30 @@
 {
-  "compilerOptions": {
-    "jsx": "react",
-    "esModuleInterop": true
-  }
+    "compilerOptions": {
+        /* ✅ Compilation */
+        "target": "ES6",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "lib": ["DOM", "ESNext"],
+        "jsx": "react-jsx",
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "isolatedModules": true,
+
+        /* ✅ Vérification de type */
+        "strict": true,
+        "noImplicitAny": false,
+        "allowSyntheticDefaultImports": true,
+
+        /* ✅ Résolution des chemins */
+        "baseUrl": "./assets",
+        "paths": {
+            "@/*": ["./*"]
+        }
+    },
+
+    "include": ["assets/**/*"],
+    "exclude": ["node_modules", "var", "public", "vendor"]
 }

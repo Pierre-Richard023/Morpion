@@ -1,24 +1,45 @@
 
 import React from "react";
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Position} from "../../interface/position";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { checkWinner } from "../../services/checkWinner";
+import { Board } from "@/react/interface/board";
 
 interface GameState {
-    mode: "Friend" | "Bot" | "Online" | null
+    status: 'waiting' | 'playing' | 'finished'
+    currentPlayer: 'red' | 'black'
     value: 'red' | 'black'
-    squarePosition: Position[]
+    board: Board
     winner: 'red' | 'black' | null
+    winnerReason: 'win' | 'timeout' | 'abandon' | 'draw' | null
     playable: boolean
     moves: number
+    timers: {
+        red: number
+        black: number
+    }
+    replayRequests: {
+        red: boolean
+        black: boolean
+    }
 }
 
 const initialState: GameState = {
-    mode: null,
+    status: 'waiting',
+    currentPlayer: 'red',
     value: "red",
     playable: true,
+    timers: {
+        red: 60,
+        black: 60,
+    },
     moves: 0,
     winner: null,
-    squarePosition: [
+    winnerReason: null,
+    replayRequests: {
+        red: false,
+        black: false,
+    },
+    board: [
         {
             position: 1,
             value: null
@@ -62,22 +83,33 @@ export const gameSlice = createSlice({
     name: 'game',
     initialState,
     reducers: {
-
-        chooseMode: (state, action: PayloadAction<"Friend" | "Bot" | "Online">) => {
-            state.mode = action.payload
+        startGame: (state) => {
+            state.status = 'playing';
+            state.currentPlayer = Math.random() < 0.5 ? 'red' : 'black';
+            state.winner = null;
+            state.timers = { red: 60, black: 60 };
+            for (let i = 0; i < state.board.length; i++) {
+                state.board[i].value = null
+            }
         },
-        play: (state, action: PayloadAction<number>) => {
+        playMove: (state, action: PayloadAction<number>) => {
 
             if (state.playable) {
-                const id = state.squarePosition.findIndex(obj => obj.position === action.payload)
-                if (state.squarePosition[id].value == null) {
-                    state.squarePosition[id].value = state.value
-                    state.value = state.value === "red" ? "black" : "red"
+                const id = state.board.findIndex(obj => obj.position === action.payload)
+                if (state.board[id].value == null) {
+                    state.board[id].value = state.currentPlayer
 
-                    if (state.moves < 8)
-                        state.moves += 1
-                    else
+                    const winner = checkWinner(state.board)
+
+                    if (winner) {
+                        state.winner = winner
                         state.playable = false
+                        state.status = 'finished';
+                        return
+                    }
+                    else
+                        state.currentPlayer = state.currentPlayer === "red" ? "black" : "red"
+
                 }
 
             }
@@ -85,8 +117,8 @@ export const gameSlice = createSlice({
         },
         reset: (state) => {
 
-            for (let i = 0; i < state.squarePosition.length; i++) {
-                state.squarePosition[i].value = null
+            for (let i = 0; i < state.board.length; i++) {
+                state.board[i].value = null
             }
             state.moves = 0
             state.playable = true
@@ -94,40 +126,48 @@ export const gameSlice = createSlice({
             state.winner = null
 
         },
-        checkIfSomeoneWin: (state) => {
+        decrementTimer(state) {
+            if (state.status !== 'playing') return;
 
-            const winConditions = [
-                [0, 1, 2],
-                [3, 4, 5],
-                [6, 7, 8],
-                [0, 3, 6],
-                [1, 4, 7],
-                [2, 5, 8],
-                [0, 4, 8],
-                [2, 4, 6],
-            ];
+            const current = state.currentPlayer;
+            state.timers[current] -= 1;
 
-
-            for (let i = 0; i < winConditions.length; i++) {
-
-                const [a, b, c] = winConditions[i]
-                if (state.squarePosition[a].value != null && state.squarePosition[a].value == state.squarePosition[b].value && state.squarePosition[b].value == state.squarePosition[c].value) {
-                    state.playable = false
-                    state.winner = state.squarePosition[a].value
-                    return
-                }
-
+            if (state.timers[current] <= 0) {
+                state.timers[current] = 0;
+                state.status = 'finished';
+                state.winner = current === 'red' ? 'black' : 'red';
             }
-
-
+        },
+        playerAbandon(state, action: PayloadAction<'red' | 'black'>) {
+            if (state.status !== 'playing') return;
+            state.winner = action.payload === 'red' ? 'black' : 'red';
+            state.winnerReason = 'abandon';
+            state.status = 'finished';
+        },
+        requestReplay(state, action: PayloadAction<'red' | 'black'>) {
+            state.replayRequests[action.payload] = true;
+            if (state.replayRequests.red && state.replayRequests.black) {
+                state.currentPlayer = Math.random() < 0.5 ? 'red' : 'black';
+                state.winner = null;
+                state.winnerReason = null;
+                state.status = 'playing';
+                state.replayRequests = { red: false, black: false };
+                state.timers = { red: 60, black: 60 };
+                for (let i = 0; i < state.board.length; i++) {
+                    state.board[i].value = null
+                }
+            }
         },
     }
 })
 
 
 export const {
-    play, checkIfSomeoneWin, reset,
-    chooseMode
+    startGame,
+    playMove,
+    reset, decrementTimer,
+    playerAbandon,
+    requestReplay
 } = gameSlice.actions
 
 export default gameSlice.reducer

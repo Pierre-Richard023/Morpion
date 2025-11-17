@@ -8,12 +8,12 @@ import Square from "../square/square"
 const Board = () => {
 
 
-        const square = useAppSelector((state) => state.game.squarePosition)
+        const square = useAppSelector((state) => state.game.board)
 
 
     return (
         <>
-            <div className="grid grid-cols-3 h-96 w-96">
+            <div className="grid grid-cols-3 grid-rows-3 w-full max-w-md aspect-square">
                 {
                     square.map((obj, index) => (
                         <Square key={index} position={obj} />

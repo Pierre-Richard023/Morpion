@@ -9,11 +9,17 @@ class GameController extends AbstractController
 {
 
 
-    #[Route('/game','play')]
+    #[Route('/game', 'play')]
     public function play()
     {
-
-
         return $this->render('Game/board.html.twig');
+    }
+
+
+
+    #[Route('/lobby', 'lobby')]
+    public function lobby()
+    {
+        return $this->render('Game/lobby.html.twig');
     }
 }

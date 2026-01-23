@@ -11,23 +11,22 @@
 
 			<div {{ stimulus_controller('auth-check') }} class="container mx-auto flex flex-col items-center px-4 py-4 text-center md:py-28 md:px-10 lg:px-32 xl:max-w-4xl">
 
-				<a href="{{ path("lobby") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} {{ stimulus_controller('auth-check',{'mode': 'friend','url': path("lobby")} ) }}>
+				{% include "Home/_modal.html.twig" %}
+
+				<a href="{{ path("lobby") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} data-controller="auth-check" data-auth-check-mode-value="friend" data-auth-check-url-value="{{path("play")}}">
 					<img src={{ asset('images/friend.svg') }} class="w-6 h-5 me-2 -ms-1" alt="logo friend"/>
 					Jouer avec un ami
 				</a>
 
-				<a href="{{ path("play") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} {{ stimulus_controller('auth-check',{'mode': 'robot','url': path("play")} ) }}>
+				<a href="{{ path("play") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} data-controller="auth-check" data-auth-check-mode-value="robot" data-auth-check-url-value="{{path("lobby")}}">
 					<img src={{ asset('images/robot.svg') }} class="w-6 h-5 me-2 -ms-1" alt="logo robot"/>
 					Jouer contre l'ordi
 				</a>
 
-				<a href="{{ path("play") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} {{ stimulus_controller('auth-check',{'mode': 'online','url': path("play")} ) }}>
+				<a href="{{ path("play") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} data-controller="auth-check" data-auth-check-mode-value="online" data-auth-check-url-value="{{path("lobby")}}">
 					<img src={{ asset('images/world.svg') }} class="w-6 h-5 me-2 -ms-1" alt="logo internet"/>
 					Jouer en ligne
 				</a>
-
-				{% include 'Home/_modal.html.twig' %}
-
 			</div>
 		</div>
 	</section>

@@ -20,13 +20,18 @@ const GameViews = () => {
     }, []);
 
 
-    const handleReplay = () => dispatch(requestReplay(currentPlayer))
+    const handleReplay = () => {
+
+        dispatch(requestReplay(currentPlayer))
+        handleModalClose();
+
+    }
     const handleAbandon = () => dispatch(playerAbandon(currentPlayer))
     const handleModalClose = () => {
         setToastMessage('');
     }
     const handleLeave = () => {
-
+        window.location.replace("/");
     }
 
 
@@ -65,7 +70,7 @@ const GameViews = () => {
                             </div>
 
                             <div className="mt-6">
-                                <button className="flex items-center space-x-2 border border-gray-400 rounded px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
+                                <button className="cursor-pointer flex items-center space-x-2 border border-gray-400 rounded px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
                                     onClick={handleAbandon}
                                 >
                                     <span>Abandonner</span>
@@ -76,15 +81,17 @@ const GameViews = () => {
 
                     {status === 'finished' &&
                         <>
-                            <div className="flex flex-col items-center justify-center">
-                                <div className="space-x-2 mt-4">
-                                    <button onClick={handleReplay} className="px-4 py-2 bg-primary text-white rounded-lg">
+                            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-10">
+                                <button onClick={handleReplay} type="button" className="cursor-pointer w-40 py-3 active:scale-95 transition text-sm text-white rounded-full bg-primary">
+                                    <span className="mb-0.5">
                                         rejouer
-                                    </button>
-                                    <button onClick={handleLeave} className="px-4 py-2 bg-secondary text-white rounded-lg">
+                                    </span>
+                                </button>
+                                <button onClick={handleLeave} type="button" className="cursor-pointer w-40 py-3 active:scale-95 transition text-sm text-white rounded-full bg-secondary">
+                                    <span className="mb-0.5">
                                         quitter la salle
-                                    </button>
-                                </div>
+                                    </span>
+                                </button>
                             </div>
                         </>
                     }

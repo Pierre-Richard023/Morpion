@@ -12,8 +12,8 @@ export default class extends Controller {
     declare readonly modalTarget: HTMLElement;
     declare readonly playerNameTarget: HTMLInputElement;
     declare readonly errorTarget: HTMLElement;
-    declare readonly modeValue: string;
-    declare readonly urlValue: string;
+    declare modeValue: string;
+    declare urlValue: string;
 
     connect() {
 
@@ -22,15 +22,11 @@ export default class extends Controller {
 
     checkAuth(event: Event) {
         event.preventDefault();
-
-
         const player = localStorage.getItem("player");
-
         if (!player) {
             this.showModal();
             return;
         }
-
         this.proceed();
     }
 
@@ -65,7 +61,7 @@ export default class extends Controller {
         this.errorTarget.classList.add("hidden");
     }
 
-    proceed() { 
+    proceed() {
         if (this.urlValue) {
             window.location.href = this.urlValue;
         }

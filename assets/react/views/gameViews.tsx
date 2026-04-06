@@ -1,104 +1,70 @@
 import React, { useEffect, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
-import { playerAbandon, requestReplay, reset, startGame } from "../store/reducer/gameReducer";
-
-import Board from "../components/board/board";
-import ScoreBoard from "../components/scoreBoard/scoreBoard";
-import ResultModal from "../components/resultModal/resultModal";
-
-
+import Game from "../components/game/game"
+import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks"
+import { loadPlayer } from "../store/reducer/playersReducer"
+import { View } from "../interface/all"
+import { resetMatchmaking } from "../store/reducer/matchmakingReducer"
+import Matchmaking from "../components/matchmaking/matchmaking"
 
 
 const GameViews = () => {
 
     const dispatch = useAppDispatch()
-    const { status, winner, winnerReason, currentPlayer } = useAppSelector((state) => state.game);
-    const [toastMessage, setToastMessage] = useState<string>('');
+    const player = useAppSelector(state => state.player.data)
+
+    const [gameId, setGameId] = useState<string | null>(null)
+    const [view, setView] = useState<View>('matchmaking')
 
     useEffect(() => {
-        dispatch(startGame());
-    }, []);
+        const savedId = localStorage.getItem('playerId')
+        if (savedId) dispatch(loadPlayer(savedId))
+    }, [dispatch])
 
 
-    const handleReplay = () => {
 
-        dispatch(requestReplay(currentPlayer))
-        handleModalClose();
-
-    }
-    const handleAbandon = () => dispatch(playerAbandon(currentPlayer))
-    const handleModalClose = () => {
-        setToastMessage('');
-    }
-    const handleLeave = () => {
-        window.location.replace("/");
+    const handleMatchFound = (id: string) => {
+        setGameId(id)
+        setView('game')
     }
 
+    const handleBackToSearch = () => {
+        dispatch(resetMatchmaking())
+        setGameId(null)
+        setView('matchmaking')
+    }
 
 
-    useEffect(() => {
-        if (status === 'finished') {
-            let msg = '';
-            if (winnerReason === 'draw') msg = 'Match nul !';
-            else if (winner) msg = ` Joueur ${winner} a gagné !`;
-            setToastMessage(msg);
-        }
-    }, [status, winner, winnerReason]);
+    if (!player) {
+        return (
+            <>
+                <div className="min-h-screen bg-gray-950 flex items-center justify-center">
 
-
+                    <div className="relative w-24 h-24">
+                        <div className="absolute inset-0 rounded-full border-4 border-secondary" />
+                        <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                        <div className="absolute inset-0 flex items-center justify-center text-2xl">
+                            🎮
+                        </div>
+                    </div>
+                </div>
+            </>
+        )
+    }
 
     return (
         <>
-            <div className="container mx-auto p-4">
-                <ScoreBoard />
-
-                <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
-
-
-                    {status === 'finished' && (
-                        <ResultModal
-                            message={toastMessage}
-                            onClose={handleModalClose}
-                        />
-                    )}
-
-                    {
-                        status === 'playing' &&
-                        <>
-                            <div className="flex flex-col items-center justify-center">
-                                <Board />
-                            </div>
-
-                            <div className="mt-6">
-                                <button className="cursor-pointer flex items-center space-x-2 border border-gray-400 rounded px-3 py-1 text-sm text-gray-700 hover:bg-gray-100"
-                                    onClick={handleAbandon}
-                                >
-                                    <span>Abandonner</span>
-                                </button>
-                            </div>
-                        </>
-                    }
-
-                    {status === 'finished' &&
-                        <>
-                            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-10">
-                                <button onClick={handleReplay} type="button" className="cursor-pointer w-40 py-3 active:scale-95 transition text-sm text-white rounded-full bg-primary">
-                                    <span className="mb-0.5">
-                                        rejouer
-                                    </span>
-                                </button>
-                                <button onClick={handleLeave} type="button" className="cursor-pointer w-40 py-3 active:scale-95 transition text-sm text-white rounded-full bg-secondary">
-                                    <span className="mb-0.5">
-                                        quitter la salle
-                                    </span>
-                                </button>
-                            </div>
-                        </>
-                    }
-
-
-                </div>
-            </div>
+            {view === 'matchmaking' && (
+                <Matchmaking
+                    onMatchFound={handleMatchFound}
+                    onCancel={() => window.location.href = '/'}
+                />
+            )}
+            {view === 'game' && gameId && (
+                <Game
+                    gameId={gameId}
+                    onLeave={handleBackToSearch}
+                />
+            )}
         </>
     )
 }

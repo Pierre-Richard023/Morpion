@@ -1,35 +1,52 @@
-{% extends "base.html.twig" %}
+{% extends 'base.html.twig' %}
 
 {% block body %}
 
 
-	<section class="">
-		<div class="container flex flex-col justify-center p-4 mx-auto md:p-8">
-			<h2 class="mb-12 text-4xl font-bold leading-none text-center sm:text-5xl">
-				Morpion en ligne
-			</h2>
+	<div id="game-menu" data-controller="game-menu " data-game-menu-player-modal-outlet=".modal-wrapper" data-game-menu-player-id-value="{{ app.session.get('playerId') ?? '' }}">
 
-			<div {{ stimulus_controller('auth-check') }} class="container mx-auto flex flex-col items-center px-4 py-4 text-center md:py-28 md:px-10 lg:px-32 xl:max-w-4xl">
+		<main class="min-h-screen bg-gray-950 flex flex-col items-center justify-center gap-12 px-4">
 
-				{% include "Home/_modal.html.twig" %}
-
-				<a href="{{ path("lobby") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} data-controller="auth-check" data-auth-check-mode-value="friend" data-auth-check-url-value="{{path("play")}}">
-					<img src={{ asset('images/friend.svg') }} class="w-6 h-5 me-2 -ms-1" alt="logo friend"/>
-					Jouer avec un ami
-				</a>
-
-				<a href="{{ path("play") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} data-controller="auth-check" data-auth-check-mode-value="robot" data-auth-check-url-value="{{path("lobby")}}">
-					<img src={{ asset('images/robot.svg') }} class="w-6 h-5 me-2 -ms-1" alt="logo robot"/>
-					Jouer contre l'ordi
-				</a>
-
-				<a href="{{ path("play") }}" class="cursor-pointer w-56 text-gray-900 bg-white hover:bg-gray-100 border border-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center me-2 mb-2" {{ stimulus_action('auth-check', 'checkAuth', 'click') }} data-controller="auth-check" data-auth-check-mode-value="online" data-auth-check-url-value="{{path("lobby")}}">
-					<img src={{ asset('images/world.svg') }} class="w-6 h-5 me-2 -ms-1" alt="logo internet"/>
-					Jouer en ligne
-				</a>
+			<div class="text-center">
+				<h1 class="text-6xl font-black text-white tracking-tight">Morpion</h1>
+				<p class="text-gray-400 mt-2 text-lg">Choisis ton mode de jeu</p>
 			</div>
-		</div>
-	</section>
 
+			<div data-game-menu-target="playerBadge" class="hidden items-center gap-2 px-4 py-2 bg-gray-900 rounded-full border border-gray-700">
+				<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+				<span class="text-gray-300 text-sm">
+					Connecté en tant que
+					<strong data-game-menu-target="playerName" class="text-white"></strong>
+				</span>
+			</div>
+
+			<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl">
+
+				<button data-action="click->game-menu#selectMode" data-game-menu-mode-param="online" class="group relative flex flex-col items-center gap-4 p-8 rounded-2xl bg-gray-900 border border-gray-800 hover:border-indigo-500 hover:bg-gray-800 transition-all duration-200 cursor-pointer">
+					<img src={{ asset('images/world.svg') }} class="w-12 h-11 text-amber-300" alt="logo internet"/>
+					<span class="text-white font-bold text-lg">Jouer en ligne</span>
+					<span class="text-gray-400 text-sm text-center">Affronte un adversaire aléatoire</span>
+					<span class="absolute inset-0 rounded-2xl ring-2 ring-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+				</button>
+
+				<button data-action="click->game-menu#selectMode" data-game-menu-mode-param="friend" class="group relative flex flex-col items-center gap-4 p-8 rounded-2xl bg-gray-900 border border-gray-800 hover:border-emerald-500 hover:bg-gray-800 transition-all duration-200 cursor-pointer">
+					<img src={{ asset('images/friend.svg') }} class="w-12 h-11  not-odd:" alt="logo friend"/>
+					<span class="text-white font-bold text-lg">Contre un ami</span>
+					<span class="text-gray-400 text-sm text-center">Partage un lien à ton ami</span>
+					<span class="absolute inset-0 rounded-2xl ring-2 ring-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+				</button>
+
+				<button data-action="click->game-menu#selectMode" data-game-menu-mode-param="bot" class="group relative flex flex-col items-center gap-4 p-8 rounded-2xl bg-gray-900 border border-gray-800 hover:border-rose-500 hover:bg-gray-800 transition-all duration-200 cursor-pointer">
+					<img src={{ asset('images/robot.svg') }} class="w-12 h-11 " alt="logo robot"/>
+					<span class="text-white font-bold text-lg">Contre un robot</span>
+					<span class="text-gray-400 text-sm text-center">Entraîne-toi en solo</span>
+					<span class="absolute inset-0 rounded-2xl ring-2 ring-rose-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+				</button>
+
+			</div>
+
+		</main>
+	</div>
+	{% include "Home/_modal.html.twig" %}
 
 {% endblock %}

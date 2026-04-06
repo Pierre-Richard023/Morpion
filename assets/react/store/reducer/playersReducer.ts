@@ -1,49 +1,55 @@
-import { Player } from "@/react/interface/player";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Player } from "@/react/interface/all";
+import api from "../../services/api";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 
 interface PlayersState {
-    red: Player | null;
-    black: Player | null;
+    data: Player | null
+    loading: boolean
+    error: string | null
 }
 
 const initialState: PlayersState = {
-    red: {
-        id: '1',
-        name: 'Red Player',
-        color: 'red',
-        score: 0,
-    },
-    black: {
-        id: '2',
-        name: 'Black Player',
-        color: 'black',
-        score: 0,
-    },
+    data: null,
+    loading: false,
+    error: null,
 }
 
+
+export const loadPlayer = createAsyncThunk<Player, string>(
+    'player/load',
+    async (playerId) => {
+        const res = await api.get<Player>(`/players/${playerId}`)
+        return res.data
+    }
+)
+
+
 export const playersSlice = createSlice({
-    name: 'players',
+    name: 'player',
     initialState,
     reducers: {
-        setPlayerName(state, action) {
-
+        setPlayer: (state, action: PayloadAction<Player>) => {
+            state.data = action.payload
         },
-        addScore(state, action: PayloadAction<'red' | 'black'>) {
-
-            if (action.payload === 'red')
-                state.red!.score += 1;
-            else
-                state.black!.score += 1;
-
+        clearPlayer: (state) => {
+            state.data = null
+            localStorage.removeItem('playerId')
         },
-        resetScores(state) {
-        },
-    }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(loadPlayer.fulfilled, (state, action: PayloadAction<Player | null>) => {
+                state.data = action.payload
+            })
+            .addCase(loadPlayer.rejected, (state) => {
+                localStorage.removeItem('playerId')
+            })
+    },
 })
 
 
-export const { setPlayerName, addScore, resetScores } = playersSlice.actions;
+export const { setPlayer, clearPlayer } = playersSlice.actions;
 export default playersSlice.reducer
 
 

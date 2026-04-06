@@ -1,24 +1,33 @@
-<div {{ stimulus_target('auth-check', 'modal') }} id="loginModal" class="hidden fixed inset-0 bg-gray-400/20 flex items-center justify-center z-50">
+<div class="modal-wrapper" data-controller="player-modal" data-player-modal-game-menu-outlet="#game-menu" data-player-modal-api-url-value="/api/players">
+	<div data-player-modal-target="backdrop" data-action="click->player-modal#close" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-40 transition-opacity duration-200"></div>
+	<div data-player-modal-target="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+		<div class="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-md p-8">
 
-	<div class="relative flex flex-col items-center max-w-lg gap-4 p-6 rounded-md shadow-md sm:py-8 sm:px-12 bg-gray-50 text-gray-800">
-		<button class="absolute top-2 right-2" {{ stimulus_action('auth-check', 'closeModal', 'click') }}>
-			<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" fill="currentColor" class="flex-shrink-0 w-6 h-6">
-				<polygon points="427.314 107.313 404.686 84.687 256 233.373 107.314 84.687 84.686 107.313 233.373 256 84.686 404.687 107.314 427.313 256 278.627 404.686 427.313 427.314 404.687 278.627 256 427.314 107.313"></polygon>
-			</svg>
-		</button>
-
-		<h2 class="text-2xl font-semibold leading-tight tracking-wide">Qui êtes-vous ?</h2>
-		<p class="text-center text-gray-600">Avant de commencer à jouer, veuillez choisir un surnom</p>
-
-		<div class="w-full space-y-1 text-gray-800 ">
-			<label for="nickname" class="hidden">Surnom</label>
-			<div class="relative w-full">
-				<input {{ stimulus_target('auth-check', 'playerName') }} type="nickname" name="nickname" placeholder="Surnom" class="w-full py-2 pl-10 text-2xl font-bold rounded-md focus:outline-none bg-gray-100 text-gray-800  placeholder-gray-700  border-2   border-gray-300">
-
-				<p {{ stimulus_target('auth-check', 'error') }} class="text-red-600 text-sm mb-4 hidden"></p>
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-2xl font-black text-white">Choisis ton pseudo</h2>
+				<button data-action="click->player-modal#close" class="text-gray-400 hover:text-white transition-colors">
+					✕
+				</button>
 			</div>
-		</div>
-		<button {{ stimulus_action('auth-check', 'savePlayer', 'click') }} type="button" class="px-8 py-3 font-semibold rounded-full bg-primary text-gray-50">Continuer</button>
-	</div>
 
+			<div class="space-y-4">
+				<div>
+					<label class="block text-sm text-gray-400 mb-2">Pseudo</label>
+					<input type="text" data-player-modal-target="input" data-action="keydown->player-modal#onKeydown input->player-modal#clearError" placeholder="Ex: SuperJoueur42" maxlength="20" class="w-full bg-gray-800 border border-gray-600 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-gray-500 transition-colors"/>
+					<p data-player-modal-target="error" class="hidden text-rose-400 text-sm mt-2"></p>
+				</div>
+
+				<button data-action="click->player-modal#submit" data-player-modal-target="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+					<span data-player-modal-target="btnText">Jouer !</span>
+					<span data-player-modal-target="btnLoader" class="hidden">
+						<svg class="animate-spin h-4 w-4" fill="none" viewbox="0 0 24 24">
+							<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+						</svg>
+					</span>
+				</button>
+			</div>
+
+		</div>
+	</div>
 </div>

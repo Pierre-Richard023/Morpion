@@ -104,14 +104,15 @@ class MatchmakingController extends AbstractController
             return $this->json(['error' => 'Joueur introuvable lors du match'], 500);
         }
 
-        $game= new Game();
+        $game = new Game();
         $game->playerRed = $playerRed->toArray();
         $game->playerBlack = $playerBlack->toArray();
         $game->status  = 'playing';
+        $game->startedAt = time(); 
 
         $this->gameRepository->save($game);
 
-         $matchData = [
+        $matchData = [
             'type'   => 'match_found',
             'gameId' => $game->id,
             'game'   => $game->toArray(),

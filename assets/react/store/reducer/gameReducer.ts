@@ -45,6 +45,33 @@ export const abandonGame = createAsyncThunk<void, { gameId: string; playerId: st
     }
 )
 
+export const requestRematch = createAsyncThunk<Game, { gameId: string; playerId: string }>(
+    'game/rematch',
+    async ({ gameId, playerId }) => {
+        const res = await api.post<{ status: string; game: Game }>(
+            `/games/${gameId}/rematch`, { playerId }
+        )
+        return res.data.game
+    }
+)
+
+export const declineRematch = createAsyncThunk<void, { gameId: string; playerId: string }>(
+    'game/declineRematch',
+    async ({ gameId, playerId }) => {
+        await api.delete(`/games/${gameId}/rematch`, {
+            data: { playerId }
+        })
+    }
+)
+
+export const sendTimeout = createAsyncThunk<void, { gameId: string; playerId: string }>(
+    'game/timeout',
+    async ({ gameId, playerId }) => {
+        await api.post(`/games/${gameId}/timeout`, { playerId })
+    }
+)
+
+
 
 export const gameSlice = createSlice({
     name: 'game',
@@ -80,6 +107,9 @@ export const gameSlice = createSlice({
             })
             .addCase(abandonGame.fulfilled, (state) => {
                 state.data = null
+            })
+            .addCase(requestRematch.fulfilled, (state, action) => {
+                state.data = action.payload
             })
     },
 })

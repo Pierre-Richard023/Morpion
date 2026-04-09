@@ -15,6 +15,15 @@ class Game
     public ?array $playerRed;
     public ?array $playerBlack;
     public int $createdAt;
+    public int $startedAt;
+    public ?string $finishReason;
+    public array $score;
+    public array $rematchRequests;
+    public int $roundNumber;
+    public string $firstPlayer;
+    public array $timeLeft;
+    public int $lastMoveAt;
+
 
     public function __construct()
     {
@@ -26,6 +35,22 @@ class Game
         $this->playerRed     = null;
         $this->playerBlack   = null;
         $this->createdAt     = time();
+        $this->startedAt     = 0;
+        $this->finishReason  = null;
+        $this->score         = [
+            'red'   => 0,
+            'black' => 0,
+            'draws' => 0,
+        ];
+
+        $this->rematchRequests = [];
+        $this->roundNumber     = 1;
+        $this->firstPlayer     = 'red';
+        $this->timeLeft        = [
+            'red'   => 60,
+            'black' => 60,
+        ];
+        $this->lastMoveAt = time();
     }
 
 
@@ -33,7 +58,9 @@ class Game
     {
         $game = new self();
         foreach ($data as $key => $value) {
-            $game->$key = $value;
+            if (property_exists($game, $key)) {
+                $game->$key = $value;
+            }
         }
         return $game;
     }
@@ -41,14 +68,22 @@ class Game
     public function toArray(): array
     {
         return [
-            'id'            => $this->id,
-            'board'         => $this->board,
-            'status'        => $this->status,
-            'currentPlayer' => $this->currentPlayer,
-            'winner'        => $this->winner,
-            'playerRed'     => $this->playerRed,
-            'playerBlack'   => $this->playerBlack,
-            'createdAt'     => $this->createdAt,
+            'id'                => $this->id,
+            'board'             => $this->board,
+            'status'            => $this->status,
+            'currentPlayer'     => $this->currentPlayer,
+            'winner'            => $this->winner,
+            'playerRed'         => $this->playerRed,
+            'playerBlack'       => $this->playerBlack,
+            'timeLeft'          => $this->timeLeft,
+            'lastMoveAt'        => $this->lastMoveAt,
+            'finishReason'      => $this->finishReason,
+            'score'             => $this->score,
+            'rematchRequests'   => $this->rematchRequests,
+            'roundNumber'       => $this->roundNumber,
+            'firstPlayer'       => $this->firstPlayer,
+            'createdAt'         => $this->createdAt,
+            'startedAt'         => $this->startedAt,
         ];
     }
 
@@ -73,13 +108,33 @@ class Game
             ) {
                 $this->winner = $this->board[$a];
                 $this->status = 'finished';
+                $this->score[$this->winner]++;
                 return;
             }
         }
 
         if (!in_array(null, $this->board, true)) {
-            $this->winner = 'draw';
-            $this->status = 'finished';
+            $this->winner        = 'draw';
+            $this->status        = 'finished';
+            $this->score['draws']++;
         }
+    }
+
+    public function resetForRematch(): void
+    {
+        $this->board  = array_fill(0, 9, null);
+        $this->status = 'playing';
+        $this->winner = null;
+        $this->finishReason  = null;
+        $this->rematchRequests = [];
+        $this->roundNumber++;
+        $this->startedAt = time();
+        $this->firstPlayer   = $this->firstPlayer === 'red' ? 'black' : 'red';
+        $this->currentPlayer = $this->firstPlayer;
+        $this->timeLeft = [
+            'red'   => 60,
+            'black' => 60,
+        ];
+        $this->lastMoveAt = time();
     }
 }

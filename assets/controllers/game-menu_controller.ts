@@ -19,7 +19,6 @@ export default class GameMenuController extends Controller {
     declare playerModalOutlet: any 
 
     connect(): void {
-        // Restaurer depuis localStorage si pas de session Symfony
         if (!this.playerIdValue) {
             const saved = localStorage.getItem('player')
             if (saved) {
@@ -28,7 +27,6 @@ export default class GameMenuController extends Controller {
                 this.showPlayerBadge(player)
             }
         } else {
-            // Session Symfony → afficher le badge
             const saved = localStorage.getItem('player')
             if (saved) this.showPlayerBadge(JSON.parse(saved))
         }

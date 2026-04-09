@@ -89,7 +89,6 @@ export default class PlayerModalController extends Controller {
 
             this.close()
 
-            console.log('Player created:2222')
             if (this.pendingMode) {
                 this.gameMenuOutlet.onPlayerCreated(player, this.pendingMode)
             }

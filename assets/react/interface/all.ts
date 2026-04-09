@@ -9,19 +9,33 @@ export interface Player {
     currentGameId: string | null
 }
 
+export interface Score {
+    red: number
+    black: number
+    draws: number
+}
+
 export interface Game {
     id: string
-    board: (Symbol | null)[] 
+    board: (Symbol | null)[]
     status: GameStatus
     currentPlayer: Symbol
     winner: Winner
     playerRed: Player | null
     playerBlack: Player | null
+    finishReason: 'player_left' | 'player_disconnected' | 'timeout' | null
+    score: Score
+    rematchRequests: string[]
+    roundNumber: number
+    firstPlayer: Symbol
     createdAt: number
+    startedAt: number
+    timeLeft: { red: number; black: number }
+    lastMoveAt: number
 }
 
 export interface MercureGameEvent {
-    type: 'game_start' | 'move_played' | 'player_left'
+    type: 'game_start' | 'move_played' | 'player_left' | 'player_disconnected' | 'rematch_requested' | 'rematch_started' | 'rematch_declined' | 'timeout'
     game: Game
 }
 
@@ -30,7 +44,7 @@ export type MatchmakingStatus = 'idle' | 'waiting' | 'matched'
 
 export interface MatchmakingState {
     status: MatchmakingStatus
-    waiting: number         
+    waiting: number
     gameId: string | null
 }
 
@@ -39,7 +53,6 @@ export interface MercureMatchmakingEvent {
     gameId: string
     game: Game
 }
-
 export interface MercureCountEvent {
     waiting: number
 }

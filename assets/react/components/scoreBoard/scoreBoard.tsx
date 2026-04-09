@@ -1,27 +1,31 @@
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks"
+import React from "react";
 import NinjaBlack from "../../utils/images/ninja-black.svg"
 import NinjaRed from "../../utils/images/ninja-red.svg";
+import type { Score, Player } from '../../interface/all'
+import PlayerClock from '../playerClock/playerClock'
 
-const ScoreBoard = () => {
+interface ScoreBoardProps {
+    score: Score
+    playerRed: Player | null
+    redTime: number
+    playerBlack: Player | null
+    blackTime: number
+    roundNumber: number
+    currentPlayer: 'red' | 'black'
+    gameStatus: 'waiting' | 'playing' | 'finished'
+}
 
 
-    const dispatch = useAppDispatch()
-    const game = useAppSelector(state => state.game.data)
-
-    const redPlayer = useAppSelector((state) => state.game.data?.playerRed);
-    const blackPlayer = useAppSelector((state) => state.game.data?.playerBlack);
-    const currentPlayer = useAppSelector((state) => state.game.data?.currentPlayer)
-    // const { currentPlayer, timers, status, winner } = useAppSelector((state) => state.game);
+const ScoreBoard = ({ score, playerRed, redTime, playerBlack, blackTime, roundNumber, currentPlayer, gameStatus }: ScoreBoardProps) => {
 
 
     return (
         <>
             <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
                 <div className="flex items-center justify-center  p-4">
-                    <div className="flex items-center space-x-6 bg-gray-700 shadow rounded-full px-4 py-2">
+                    <div className="flex items-center gap-4 bg-gray-700 shadow rounded-full px-4 py-2">
 
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center py-2 px-1.5 gap-4">
                             <div className="relative">
                                 <img
                                     src={NinjaRed}
@@ -33,33 +37,43 @@ const ScoreBoard = () => {
 
                                 }
                             </div>
-                            <div className="flex flex-col items-start leading-none">
+                            <div className="flex flex-col gap-y-1.5 items-center leading-none">
                                 <span className="text-sm font-semibold text-gray-300">
-                                    {redPlayer?.username}
+                                    {playerRed?.username}
                                 </span>
-                                <span className={`text-xs ${currentPlayer === 'red' ? 'bg-secondary text-white ' : 'bg-gray-200 text-gray-800'} font-medium px-1.5 py-0.5 rounded`}   >
-                                    60
-                                </span>
+                                <PlayerClock
+                                    timeLeft={redTime}
+                                    isActive={gameStatus === 'playing' && currentPlayer === 'red'}
+                                    symbol="red"
+                                />
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-2 text-gray-400">
-                            <div className="text-lg font-bold">
-                                0
-                            </div>
-                            <div className="text-lg font-bold">
-                                0
+                        <div className="flex flex-col items-center gap-2.5 text-gray-400">
+
+                            <span className="text-xs font-bold uppercase tracking-widest">
+                                Manche {roundNumber}
+                            </span>
+                            <div className="flex  items-center  gap-x-2.5">
+                                <div className="text-lg font-bold">
+                                    {score.red}
+                                </div>
+                                <div className="text-lg font-bold">
+                                    {score.black}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center space-x-2">
-                            <div className="flex flex-col items-end leading-none">
+                        <div className="flex items-center py-2 px-1.5 gap-4">
+                            <div className="flex flex-col gap-y-1.5 items-center leading-none">
                                 <span className="text-sm font-semibold text-gray-300">
-                                    {blackPlayer?.username}
+                                    {playerBlack?.username}
                                 </span>
-                                <span className={`text-xs ${currentPlayer === 'black' ? 'bg-secondary text-white ' : 'bg-gray-200 text-gray-800'} font-medium px-1.5 py-0.5 rounded`}   >
-                                    60
-                                </span>
+                                <PlayerClock
+                                    timeLeft={blackTime}
+                                    isActive={gameStatus === 'playing' && currentPlayer === 'black'}
+                                    symbol="black"
+                                />
                             </div>
                             <div className="relative">
                                 <img

@@ -16,13 +16,14 @@ export function useGameMercure(gameId: string | null): void {
         if (!gameId) return
 
         const url = new URL(MERCURE_URL)
-        url.searchParams.append('topic', `game/${gameId}`)
+        url.searchParams.append('topic', `game.${gameId}`)
 
         esRef.current = new EventSource(url.toString(), { withCredentials: true })
 
         esRef.current.onmessage = (event: MessageEvent) => {
             const data: MercureGameEvent = JSON.parse(event.data as string)
-            if (data.game) {
+
+            if (data.type === 'game_start' || data.type === 'move_played' || data.type === 'player_left' || data.type === 'player_disconnected' || data.type === 'rematch_requested' || data.type === 'rematch_started' || data.type === 'rematch_declined' || data.type === 'timeout') {
                 dispatch(updateGame(data.game))
             }
         }

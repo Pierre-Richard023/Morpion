@@ -156,19 +156,19 @@
         ]
     },
     "symfony/webpack-encore-bundle": {
-        "version": "2.3",
+        "version": "2.4",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "2.0",
-            "ref": "9ef5412a4a2a8415aca3a3f2b4edd3866aab9a19"
+            "version": "2.1",
+            "ref": "b346dae458e64a1921ded2125993d94bd719a8dd"
         },
         "files": [
-            "./assets/app.js",
-            "./assets/styles/app.css",
-            "./config/packages/webpack_encore.yaml",
-            "./package.json",
-            "./webpack.config.js"
+            "assets/app.js",
+            "assets/styles/app.css",
+            "config/packages/webpack_encore.yaml",
+            "package.json",
+            "webpack.config.js"
         ]
     }
 }
